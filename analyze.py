@@ -6,15 +6,32 @@ def welcomeUser():
 
 # Get Username
 def getUsername():
-    # print mmessage prompting user to input their name
-    usernameFromInput = input("\nTo begin, please enter your username:\n")
 
-    if len(usernameFromInput) < 5 or not usernameFromInput.isidentifier():
-        print("Your username must be at least 5 characters long, alphanumeric only (a-z/A-Z/0-9), have no space and cannot start with a number")
-        usernameFromInput = generate_username()[0]
-        print("Assigning new username instead...")
+    maxAttemps = 3
+    attempts = 0
 
-    return usernameFromInput
+    while attempts < maxAttemps:
+
+         # print mmessage prompting user to input their name
+        inputPrompt = ""
+
+        if attemps == 0:
+        usernameFromInput = input("\nTo begin, please enter your username:\n") 
+        else:
+            inputPrompt = "\nPlease try again:\n
+        usernameFromInput = input(inputPrompt)
+
+        # validate username
+        if len(usernameFromInput) < 5 or not usernameFromInput.isidentifier():
+            print("Your username must be at least 5 characters long, alphanumeric only (a-z/A-Z/0-9), have no space and cannot start with a number")
+        else:
+            return usernameFromInput
+
+        attempts += 1
+
+    print("Exhausted all " + str(maxAttemps) + " attemps, Assigning new username instead...")
+    return generate_username()[0]
+
 
 # Greet the User
 def greetUser(name):
