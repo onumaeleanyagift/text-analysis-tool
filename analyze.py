@@ -15,10 +15,10 @@ def getUsername():
          # print mmessage prompting user to input their name
         inputPrompt = ""
 
-        if attemps == 0:
-        usernameFromInput = input("\nTo begin, please enter your username:\n") 
+        if attempts == 0:
+            usernameFromInput = input("\nTo begin, please enter your username:\n") 
         else:
-            inputPrompt = "\nPlease try again:\n
+            inputPrompt = "\nPlease try again:\n"
         usernameFromInput = input(inputPrompt)
 
         # validate username
@@ -37,9 +37,21 @@ def getUsername():
 def greetUser(name):
     print("Hello, " + name)
 
+
+# Get text from file
+def getArticleText():
+    f = open("files/article.txt", "r")
+    rawText = f.read()
+    f.close()
+    return rawText.replace("\n", " ").replace("\r", "")
+
 def runProgram():
     welcomeUser()
     username = getUsername()
     greetUser(username)
 
 runProgram()
+
+articleTextRaw = getArticleText()
+print("GOT: ")
+print(articleTextRaw)
