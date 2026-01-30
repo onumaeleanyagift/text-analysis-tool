@@ -1,4 +1,5 @@
 from random_username.generate import generate_username
+
 import nltk
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -92,16 +93,7 @@ def treebankPosToWordnetPos(partOfSpeech):
     posFirstChar = partOfSpeech[0]
     if posFirstChar in posToWordnetTag:
         return posToWordnetTag[posFirstChar]
-    # if partOfSpeech.startswith('J'):
-    #     return wordnet.ADJ
-    # elif partOfSpeech.startswith('V'):
-    #     return wordnet.VERB
-    # elif partOfSpeech.startswith('N'):
-    #     return wordnet.NOUN
-    # elif partOfSpeech.startswith('R'):
-    #     return wordnet.ADV
-    # else:
-    return ''
+    return wordnet.NOUN
 
 
 # Convert raw list of (word, POS) tuple to a list strings that only include valid english words
@@ -137,4 +129,4 @@ articleWordsCleansed = cleanseWordList(wordsPosTagged)
 
 # Print for testing
 print("GOT: ")
-print(wordsPosTagged)
+print(articleWordsCleansed)
