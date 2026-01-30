@@ -1,7 +1,6 @@
 from random_username.generate import generate_username
 
-import re
-import nltk
+import re, nltk, json
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet, stopwords
@@ -35,7 +34,7 @@ def getUsername():
             usernameFromInput = input("\nTo begin, please enter your username:\n") 
         else:
             inputPrompt = "\nPlease try again:\n"
-        usernameFromInput = input(inputPrompt)
+            usernameFromInput = input(inputPrompt)
 
         # validate username
         if len(usernameFromInput) < 5 or not usernameFromInput.isidentifier():
@@ -136,12 +135,30 @@ articleWordsCleansed = cleanseWordList(wordsPosTagged)
 
 # Generate word cloud
 separator = " "
-wordcloud = WordCloud(width = 3000, height = 2000, random_state=1, \
+wordCloudFilePath = "results/wordcloud.png"
+wordcloud = WordCloud(width = 1000, height = 700, random_state=1, \
  background_color= "salmon", colormap= "Pastel1", collocations=False).generate(separator.join(articleWordsCleansed))
-wordcloud.to_file("results/wordcloud.png")
+wordcloud.to_file(wordCloudFilePath)
 
 # Run Sentiment Analysis
 sentimentResult = sentimentAnalyzer.polarity_scores(articleTextRaw)
 
+# Collate Analyses into one dictionary
+finalResult = {
+    "username": username,
+    "data": {
+        "keySentences": keySentences,
+        "wordsPerSentence": wordsPerSentence,
+        "sentiment": sentimentResult,
+        "wordCloudFilePath": wordCloudFilePath
+    },
+    "metadata": {
+        "snetencesAnalyzed": len(articleSentences),
+        "wordsAnalyzed": len(articleWordsCleansed)
+    }
+}
+
+finalResultJson = json.dumps(finalResult, indent=4)
+
 # Print for testing
-print(sentimentResult)
+print(finalResultJson)
