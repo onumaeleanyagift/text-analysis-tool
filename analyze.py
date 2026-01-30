@@ -2,8 +2,10 @@ from random_username.generate import generate_username
 import nltk
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet
 nltk.download('wordnet')
-wordLematizer = WordNetLemmatizer()
+nltk.download('averaged_perceptron_tagger_eng')
+wordLemmatizer = WordNetLemmatizer()
 import re
 
 #Welcome User
@@ -78,20 +80,46 @@ def getWordsPerSentence(sentences):
         totalWords += len(sentence.split(" "))
     return totalWords / len(sentences)
 
-# Filter raw tokenized words list to only include valid english words
-def cleanseWordList(words):
+# Convert part of speech from pos_tag() function into woordnet compactable pos text
+posToWordnetTag =  {
+    "J": wordnet.ADJ,
+    "V": wordnet.VERB,
+    "N": wordnet.NOUN,
+    "R": wordnet.ADV
+}
+
+def treebankPosToWordnetPos(partOfSpeech):
+    posFirstChar = partOfSpeech[0]
+    if posFirstChar in posToWordnetTag:
+        return posToWordnetTag[posFirstChar]
+    # if partOfSpeech.startswith('J'):
+    #     return wordnet.ADJ
+    # elif partOfSpeech.startswith('V'):
+    #     return wordnet.VERB
+    # elif partOfSpeech.startswith('N'):
+    #     return wordnet.NOUN
+    # elif partOfSpeech.startswith('R'):
+    #     return wordnet.ADV
+    # else:
+    return ''
+
+
+# Convert raw list of (word, POS) tuple to a list strings that only include valid english words
+def cleanseWordList(posTaggedWordTuples):
     cleanseWords = []
     invalidWordPattern = "[^a-zA-Z-+]"
-    for word in words:
+    for posTaggedWordTuple in posTaggedWordTuples:
+        word = posTaggedWordTuple[0]
+        pos = posTaggedWordTuple[1]
         cleanseWord = word.replace(".", "").lower()
-        if (not re.search(invalidWordPattern, cleanseWord)) and len(word) > 1:
-            cleanseWords.append(wordLematizer.lemmatize(cleanseWord))
+        if (not re.search(invalidWordPattern, cleanseWord)) and len(cleanseWord) > 1:
+            cleanseWords.append(wordLemmatizer.lemmatize(cleanseWord, treebankPosToWordnetPos(pos)))
     return cleanseWords
 
 # Get User Details
-welcomeUser()
-username = getUsername()
-greetUser(username)
+# welcomeUser()
+# username = getUsername()
+# greetUser(username)
 
 # Extract and Tokenize Text
 articleTextRaw = getArticleText()
@@ -104,8 +132,9 @@ keySentences = extractKeySentences(articleSentences, stockSearchPattern)
 wordsPerSentence = getWordsPerSentence(articleSentences)
 
 # Get Word Analytics
-articleWordsCleansed = cleanseWordList(articleWords)
+wordsPosTagged = nltk.pos_tag(articleWords)
+articleWordsCleansed = cleanseWordList(wordsPosTagged)
 
 # Print for testing
 print("GOT: ")
-print(articleWordsCleansed)
+print(wordsPosTagged)
