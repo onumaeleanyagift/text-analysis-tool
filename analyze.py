@@ -74,25 +74,34 @@ def getWordsPerSentence(sentences):
         totalWords += len(sentence.split(" "))
     return totalWords / len(sentences)
 
+# Filter raw tokenized words list to only include valid english words
+def cleanseWordList(words):
+    cleanseWords = []
+    invalidWordPattern = "[^a-zA-Z-+]"
+    for word in words:
+        cleanseWord = word.replace(".", "").lower()
+        if (not re.search(invalidWordPattern, cleanseWord)) and len(word) > 1:
+            cleanseWords.append(cleanseWord)
+    return cleanseWords
+
 # Get User Details
-welcomeUser()
-username = getUsername()
-greetUser(username)
+# welcomeUser()
+# username = getUsername()
+# greetUser(username)
 
 # Extract and Tokenize Text
 articleTextRaw = getArticleText()
 articleSentences = tokenizeSentences(articleTextRaw)
 articleWords = tokenizeWords(articleSentences)
 
-# Get Analytics
+# Get Sentence Analytics
 stockSearchPattern = "[0-9]|[%$€£]|thousand|billion|million|trillion|profit|loss"
 keySentences = extractKeySentences(articleSentences, stockSearchPattern)
 wordsPerSentence = getWordsPerSentence(articleSentences)
 
+# Get Word Analytics
+articleWordsCleansed = cleanseWordList(articleWords)
+
 # Print for testing
 print("GOT: ")
-print(wordsPerSentence)
-
-
-# for sentence in articleSentences:
-#     print(sentence + "\n")
+print(articleWordsCleansed)
