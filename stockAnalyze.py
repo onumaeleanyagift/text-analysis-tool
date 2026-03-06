@@ -1,4 +1,5 @@
 import yfinance as yf
+import requests
 from datetime import datetime
 
 
@@ -34,13 +35,28 @@ def getCompanyNews (company):
     newsList = company.news
     allNewsArticles = []
     for newsDict in newsList:
+        if newsDict['content']['clickThroughUrl']:
+            link = newsDict['content']['clickThroughUrl']['url']
+        else:
+            link = newsDict['content']['canonicalUrl']['url']
+
         newsDictToAdd = {
-            'title': newsDict['content']['title']
-            # 'url': newsDict['content']['clickThroughUrl']['url']
+            'title': newsDict['content']['title'],
+            'link': link
         }
         allNewsArticles.append(newsDictToAdd)
-    print(allNewsArticles)
+    # print(allNewsArticles)
     return allNewsArticles
+
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36'
+}
+
+def extractCompamyNewsArticles(newsArticles):
+    url = newsArticles[0]['link']
+    page = requests.get(url, headers=headers)
+    print(page.text)
+
 
 def getCompanyStockInfo(tickerSymbol):
     # Get data from Yahoo Finance API
@@ -51,5 +67,6 @@ def getCompanyStockInfo(tickerSymbol):
     priceHistory = getPriceHistory(company)
     futureEarningsDates = getEarningsDates(company)
     newsArticles = getCompanyNews(company)
+    extractCompamyNewsArticles(newsArticles)
 
 getCompanyStockInfo("MSFT")
