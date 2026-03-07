@@ -49,11 +49,19 @@ def getCompanyNews (company):
     # print(allNewsArticles)
     return allNewsArticles
 
+def extractNewsArticleTextFromHtml(soup):
+    allText = ""
+    result = soup.find_all("div", {"class":"body-wrap"})
+    for res in result:
+        allText += res.text
+    return allText
+
 headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36'
 }
 
 def extractCompamyNewsArticles(newsArticles):
+    allArticlesText = ""
     for newsArticle in newsArticles:
         url = newsArticle['link']
         page = requests.get(url, headers=headers)
@@ -61,10 +69,9 @@ def extractCompamyNewsArticles(newsArticles):
         print(soup.title)
         print(soup.url)
 
-        if soup.find_all(string="Continue reading"):
-            print("Tag found - SKIP!")
-        else:
-            print("Tag not found - don't SKIP!")
+        if not soup.find_all(string="Story Continues"):
+            allArticlesText += extractNewsArticleTextFromHtml(soup)
+    return allArticlesText
 
 
 
@@ -77,6 +84,7 @@ def getCompanyStockInfo(tickerSymbol):
     priceHistory = getPriceHistory(company)
     futureEarningsDates = getEarningsDates(company)
     newsArticles = getCompanyNews(company)
-    extractCompamyNewsArticles(newsArticles)
+    newsArticlesAllText = extractCompamyNewsArticles(newsArticles)
+    print(newsArticlesAllText)
 
 getCompanyStockInfo("MSFT")
