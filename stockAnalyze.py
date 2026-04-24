@@ -69,8 +69,8 @@ def extractCompamyNewsArticles(newsArticles):
         url = newsArticle['link']
         page = requests.get(url, headers=headers)
         soup = BeautifulSoup(page.text, 'html.parser')
-        print(soup.title)
-        print(soup.url)
+        # print(soup.title)
+        # print(soup.url)
 
         if not soup.find_all(string="Story Continues"):
             allArticlesText += extractNewsArticleTextFromHtml(soup)
@@ -82,8 +82,13 @@ def getCompanyStockInfo(tickerSymbol):
     # Get data from Yahoo Finance API
     company = yf.Ticker(tickerSymbol)
 
-    # Get basic inf on company
+    # Get basic info on company
     basicInfo = extractbasicInfo(company.info)
+  
+    # Check if company exists, if not, trigger error
+    if not basicInfo["longName"]:
+        raise NameError("Could not find stock info, ticker may be delisted or does not exist")
+
     priceHistory = getPriceHistory(company)
     futureEarningsDates = getEarningsDates(company)
     newsArticles = getCompanyNews(company)
@@ -99,5 +104,5 @@ def getCompanyStockInfo(tickerSymbol):
     }
     return finalStockAnalysis
 
-# companyStockAnalysis = getCompanyStockInfo("MSFT")
+companyStockAnalysis = getCompanyStockInfo("MSFT")
 # print(json.dumps(companyStockAnalysis, indent=4))
