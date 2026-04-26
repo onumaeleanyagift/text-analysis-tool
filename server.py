@@ -1,8 +1,10 @@
 from flask import Flask, abort, request
+from flask_cors import CORS
 from stockAnalyze import getCompanyStockInfo
 from analyze import analyzeText
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/si-se', methods=["GET"])
 def si_se():
