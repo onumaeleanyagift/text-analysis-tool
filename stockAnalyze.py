@@ -4,11 +4,11 @@ import requests
 import analyze
 from datetime import datetime
 from bs4 import BeautifulSoup
-
+import concurrent.futures
 
 
 def extractbasicInfo(data):
-    keysToExtract = ["longName", "website", "sector", "fullTimeEmployee", "marketCap", "totalRevenue", "trailingEps"]
+    keysToExtract = ["longName", "website", "sector", "fullTimeEmployees", "marketCap", "totalRevenue", "trailingEps"]
 
     basicInfo = {}
     for key in keysToExtract:
@@ -63,18 +63,31 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36'
 }
 
-def extractCompamyNewsArticles(newsArticles):
-    allArticlesText = ""
-    for newsArticle in newsArticles:
-        url = newsArticle['link']
-        page = requests.get(url, headers=headers)
-        soup = BeautifulSoup(page.text, 'html.parser')
-        # print(soup.title)
-        # print(soup.url)
+def processSingleArticle(newsArticle):
+    url = newsArticle['link']
+    page = requests.get(url, headers=headers)
+    soup = BeautifulSoup(page.text, 'html.parser')
+    if not soup.find_all(string="Story Continues"):
+        return extractNewsArticleTextFromHtml(soup)
+    return ""
 
-        if not soup.find_all(string="Story Continues"):
-            allArticlesText += extractNewsArticleTextFromHtml(soup)
-    return allArticlesText
+def extractCompamyNewsArticles(newsArticles):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        results = executor.map(processSingleArticle, newsArticles)
+    return "".join(results)
+
+# def extractCompamyNewsArticles(newsArticles):
+#     allArticlesText = ""
+#     for newsArticle in newsArticles:
+#         url = newsArticle['link']
+#         page = requests.get(url, headers=headers)
+#         soup = BeautifulSoup(page.text, 'html.parser')
+#         # print(soup.title)
+#         # print(soup.url)
+
+#         if not soup.find_all(string="Story Continues"):
+#             allArticlesText += extractNewsArticleTextFromHtml(soup)
+#     return allArticlesText
 
 
 

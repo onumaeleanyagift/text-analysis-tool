@@ -1,17 +1,18 @@
+# import json
 from flask import Flask, abort, request
 from flask_cors import CORS
 from stockAnalyze import getCompanyStockInfo
 from analyze import analyzeText
 
+# f = open('test/result.json')
+# stockDataTest = json.load(f)
+
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/si-se', methods=["GET"])
-def si_se():
-    return 'SI Scholarship 2027'
-
 @app.route('/analyze-stock/<ticker>', methods=["GET"])
 def analyzeStock(ticker):
+    # return stockDataTest
     if len(ticker) > 5 or not ticker.isidentifier():
         abort(400, 'Invalid ticker symbol.')
     try:
@@ -32,4 +33,4 @@ def analyzeTextHandler():
     return analysis
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5001)

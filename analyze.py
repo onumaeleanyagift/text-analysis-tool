@@ -1,5 +1,6 @@
 from random_username.generate import generate_username
-
+import io
+import base64
 import re, nltk, json
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -135,6 +136,17 @@ def analyzeText(textToAnalyze):
     background_color= "salmon", colormap= "Pastel1", collocations=False).generate(separator.join(articleWordsCleansed))
     wordcloud.to_file(wordCloudFilePath)
 
+    imgIO = io.BytesIO()
+
+    # Export wordcloud image into memory
+    wordcloud.to_image().save(imgIO, format="PNG")
+
+    # Move pointer to start
+    imgIO.seek(0)
+
+    # Convert to Base64
+    encodedWordCloud = base64.b64encode(imgIO.read()).decode("utf-8")
+
     # Run Sentiment Analysis
     sentimentResult = sentimentAnalyzer.polarity_scores(textToAnalyze)
 
@@ -144,7 +156,8 @@ def analyzeText(textToAnalyze):
             "keySentences": keySentences,
             "wordsPerSentence": wordsPerSentence,
             "sentiment": sentimentResult,
-            "wordCloudFilePath": wordCloudFilePath
+            "wordCloudFilePath": wordCloudFilePath,
+            "wordCloudImage": encodedWordCloud
         },
         "metadata": {
             "snetencesAnalyzed": len(articleSentences),
