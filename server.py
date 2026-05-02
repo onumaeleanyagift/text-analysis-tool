@@ -10,6 +10,15 @@ from analyze import analyzeText
 app = Flask(__name__)
 CORS(app)
 
+
+@app.route("/")
+def home():
+    return "Running", 200
+
+@app.route("/health")
+def health():
+    return "OK", 200
+
 @app.route('/analyze-stock/<ticker>', methods=["GET"])
 def analyzeStock(ticker):
     # return stockDataTest
