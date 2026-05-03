@@ -4,8 +4,8 @@ from flask_cors import CORS
 from stockAnalyze import getCompanyStockInfo
 from analyze import analyzeText
 
-# f = open('test/result.json')
-# stockDataTest = json.load(f)
+f = open('test/result.json')
+stockDataTest = json.load(f)
 
 app = Flask(__name__)
 CORS(app)
@@ -21,17 +21,17 @@ def health():
 
 @app.route('/analyze-stock/<ticker>', methods=["GET"])
 def analyzeStock(ticker):
-    # return stockDataTest
-    if len(ticker) > 5 or not ticker.isidentifier():
-        abort(400, 'Invalid ticker symbol.')
-    try:
-        analysis = getCompanyStockInfo(ticker)
-    except NameError as e:
-        abort(404, e)
-    except Exception as e:
-        print(f"Error running the stock analysis: {e}")
-        abort(500, 'Something went wrong running the stock analysis.')
-    return analysis
+    return stockDataTest
+    # if len(ticker) > 5 or not ticker.isidentifier():
+    #     abort(400, 'Invalid ticker symbol.')
+    # try:
+    #     analysis = getCompanyStockInfo(ticker)
+    # except NameError as e:
+    #     abort(404, e)
+    # except Exception as e:
+    #     print(f"Error running the stock analysis: {e}")
+    #     abort(500, 'Something went wrong running the stock analysis.')
+    # return analysis
 
 @app.route('/analyze-text', methods=["POST"])
 def analyzeTextHandler():
