@@ -1,4 +1,4 @@
-# import json
+import json
 from flask import Flask, abort, request
 from flask_cors import CORS
 from stockAnalyze import getCompanyStockInfo
